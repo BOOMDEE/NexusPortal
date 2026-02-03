@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NexusPortal // System Gateway</title>
+    <style>
+        /* 核心美学定义：米白科技感 */
+        :root {
+            --bg-ivory: #f2f0e9;   /* 护眼暗米白 */
+            --card-white: #faf9f6; /* 极简亮白 */
+            --ink: #1a1a1a;        /* 现代深灰黑 */
+            --border: rgba(0,0,0,0.06);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            -webkit-font-smoothing: antialiased;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        body {
+            background-color: var(--bg-ivory);
+            color: var(--ink);
+            font-family: -apple-system, "Inter", "Segoe UI", system-ui, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 24px;
+        }
+
+        .portal-card {
+            background-color: var(--card-white);
+            width: 100%;
+            max-width: 400px;
+            padding: 4rem 2rem;
+            border-radius: 2px;
+            border: 1px solid var(--border);
+            box-shadow: 0 15px 45px rgba(0,0,0,0.02);
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 200;
+            letter-spacing: 12px;
+            margin: 0 0 0.5rem 0;
+            text-transform: uppercase;
+        }
+
+        .sub-text {
+            font-size: 0.65rem;
+            letter-spacing: 3px;
+            opacity: 0.4;
+            margin-bottom: 3.5rem;
+            text-transform: uppercase;
+        }
+
+        input {
+            background-color: var(--bg-ivory);
+            border: none;
+            border-bottom: 1px solid var(--border);
+            color: var(--ink);
+            font-size: 1.5rem;
+            padding: 12px;
+            width: 100%;
+            max-width: 240px;
+            text-align: center;
+            outline: none;
+            letter-spacing: 6px;
+            font-family: inherit;
+        }
+
+        input:focus {
+            border-bottom: 1px solid var(--ink);
+            background-color: #ffffff;
+            transform: translateY(-2px);
+        }
+
+        button {
+            margin-top: 2rem;
+            background: none;
+            border: 1px solid var(--ink);
+            color: var(--ink);
+            padding: 12px 0;
+            width: 100%;
+            max-width: 180px;
+            font-size: 0.75rem;
+            letter-spacing: 4px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        button:hover {
+            background-color: var(--ink);
+            color: var(--card-white);
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 30px;
+            font-size: 0.6rem;
+            letter-spacing: 2px;
+            opacity: 0.3;
+            text-transform: uppercase;
+            text-align: center;
+            width: 100%;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 针对手机横屏或小屏幕的适配 */
+        @media (max-height: 500px) {
+            .portal-card { padding: 2rem 1.5rem; }
+            .sub-text { margin-bottom: 1.5rem; }
+            .footer { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="portal-card">
+        <h1>Nexus</h1>
+        <div class="sub-text">Authentication Required</div>
+        
+        <input type="password" 
+               inputmode="numeric" 
+               id="passcode" 
+               placeholder="••••••" 
+               maxlength="6" 
+               autocomplete="off">
+        <br>
+        <button onclick="authorize()">Authorize</button>
+    </div>
+
+    <div class="footer">
+        PROJECT_BOOMDEE // NODE: HZ_WESTLAKE // EST_2026
+    </div>
+
+    <script src="config.js"></script>
+
+    <script>
+        function authorize() {
+            const inputVal = document.getElementById('passcode').value;
+            const btn = document.querySelector('button');
+
+            // 视觉校验反馈
+            btn.innerText = "Verifying...";
+            btn.disabled = true;
+
+            setTimeout(() => {
+                // 执行跳转逻辑
+                if (NEXUS_CONFIG[inputVal]) {
+                    // 匹配成功：跳转到对应链接
+                    window.location.href = NEXUS_CONFIG[inputVal];
+                } else if (/^\d+$/.test(inputVal)) {
+                    // 输入是数字但未在列表：跳转到默认
+                    window.location.href = NEXUS_CONFIG["default"];
+                } else {
+                    // 非数字输入：报错重置
+                    alert('PROTOCOL_ERROR: INVALID_SEQUENCE');
+                    document.getElementById('passcode').value = '';
+                    btn.innerText = "Authorize";
+                    btn.disabled = false;
+                }
+            }, 500);
+        }
+
+        // 回车键触发监听
+        document.getElementById('passcode').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') authorize();
+        });
+    </script>
+</body>
+</html>
